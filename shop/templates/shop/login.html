@@ -1,0 +1,23 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}Вход{% endblock %}
+{% load static %}
+
+{% block content %}
+<div class="login-container">
+    <h2>Вход</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div>
+            <label for="username">Имя пользователя:</label>
+            <input type="text" name="username" required id="username">
+        </div>
+        <div>
+            <label for="password">Пароль:</label>
+            <input type="password" name="password" required id="password">
+        </div>
+        <button type="submit">Войти</button>
+    </form>
+</div>
+{% endblock %}
+

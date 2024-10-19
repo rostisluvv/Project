@@ -1,0 +1,48 @@
+{% extends 'shop/base.html' %}
+{% load multiply %}
+
+{% block title %}Корзина{% endblock %}
+
+{% block content %}
+<div class="cart-container">
+    <h2>Ваша корзина</h2>
+    {% if cart_items %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Изображение</th>
+                    <th>Продукт</th>
+                    <th>Количество</th>
+                    <th>Цена за единицу</th>
+                    <th>Всего</th>
+                    <th>Действие</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                    <tr>
+                        <td><img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="cart-image"></td>
+                        <td>{{ item.product.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.product.unit_price }}$</td>
+                        <td>{{ item.quantity|multiply:item.product.unit_price }}$</td>
+                        <td>
+                            <form method="post" action="{% url 'remove_from_cart' item.product.id %}">
+                                {% csrf_token %}
+                                <button type="submit">Удалить</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="total">
+            <p>Общая сумма: {{ total_sum }}$</p>
+        </div>
+        <a href="{% url 'create_order' %}" class="button">Оформить заказ</a>
+    {% else %}
+
+        <p>Ваша корзина пуста.</p>
+    {% endif %}
+</div>
+{% endblock %}

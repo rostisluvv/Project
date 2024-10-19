@@ -1,0 +1,31 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}Личный кабинет{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <h2>Личный кабинет</h2>
+    <p>Имя: {{ user.first_name }}</p>
+    <p>Фамилия: {{ user.last_name }}</p>
+    <p>Email: {{ user.email }}</p>
+    <a href="{% url 'edit_profile' %}">Редактировать профиль</a>
+
+    <h3>История заказов</h3>
+    {% if user_orders %}
+        <ul>
+            {% for order in user_orders %}
+                <li>
+                    <strong>Заказ №{{ order.id }}</strong> - {{ order.created_at }} - {{ order.total }}$
+                    <ul>
+                        {% for item in order.items.all %}
+                            <li>{{ item.quantity }} x {{ item.product.name }} - {{ item.price }}$ за единицу</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>У вас еще нет заказов.</p>
+    {% endif %}
+</div>
+{% endblock %}

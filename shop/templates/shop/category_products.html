@@ -1,0 +1,30 @@
+{% extends 'shop/base.html' %}
+
+
+{% block title %}{{ category.name }}{% endblock %}
+
+{% block content %}
+<div class="category-container">
+    <h1>{{ category.name }}</h1>
+    <p>Найдено продуктов: {{ product_count }}</p>
+
+    <form method="get" id="sort-form" class="sort-form">
+        <label for="sort-by">Сортировать: </label>
+        <select name="sort_by" id="sort-by" onchange="document.getElementById('sort-form').submit();">
+            <option value="default" {% if sort_by == 'default' %}selected{% endif %}>Без сортировки</option>
+            <option value="price_asc" {% if sort_by == 'price_asc' %}selected{% endif %}>Сначала дешевле</option>
+            <option value="price_desc" {% if sort_by == 'price_desc' %}selected{% endif %}>Сначала дороже</option>
+        </select>
+    </form>
+
+    <div class="products">
+        {% for product in products %}
+            <div class="product">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                <h3><a href="{% url 'product_detail' product.id %}">{{ product.name }}</a></h3>
+                <p>{{ product.unit_price }}$</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,133 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+    <div class="product-detail">
+        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+        <h1>{{ product.name }}</h1>
+        <p>{{ product.description }}</p>
+        <p>Цена: {{ product.unit_price }}$</p>
+        <p>В наличии: {{ product.quantity }}</p>
+
+        {% if user.is_authenticated and user.is_staff %}
+            <h2>Редактировать продукт</h2>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ edit_form.as_p }}
+                <button type="submit" name="edit_product">Сохранить изменения</button>
+            </form>
+        {% endif %}
+
+        <form id="add-to-cart-form" method="post" action="{% url 'add_to_cart' product.id %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Добавить в корзину</button>
+        </form>
+
+        <div class="reviews">
+            <h2>Отзывы</h2>
+            <div id="reviews-container">
+                {% for review in reviews %}
+                    <div class="review" id="review-{{ review.id }}">
+                        <p><strong>{{ review.user.username }}</strong> - {{ review.rating }}/5</p>
+                        <p>{{ review.comment }}</p>
+                        {% if user.is_authenticated and review.user == user %}
+                            <form class="delete-review-form" method="post" action="{% url 'delete_review' review.id %}">
+                                {% csrf_token %}
+                                <button type="submit">Удалить</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% if user.is_authenticated %}
+            <h2>Оставить отзыв</h2>
+            <form id="review-form" method="post" action="{% url 'add_review' product.id %}">
+                {% csrf_token %}
+                {{ review_form.as_p }}
+                <button type="submit">Оставить отзыв</button>
+            </form>
+        {% else %}
+            <p><a href="{% url 'login' %}">Войдите</a>, чтобы оставить отзыв.</p>
+        {% endif %}
+    </div>
+
+    <script>
+        document.getElementById('add-to-cart-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Товар добавлен в корзину.');
+                    } else {
+                        alert('Произошла ошибка. Попробуйте еще раз.');
+                    }
+                });
+        });
+
+        document.getElementById('review-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const review = document.createElement('div');
+                        review.classList.add('review');
+                        review.innerHTML = `<p><strong>${data.user}</strong> - ${data.rating}/5</p><p>${data.comment}</p>`;
+                        document.getElementById('reviews-container').appendChild(review);
+                        form.reset();
+                    } else {
+                        alert('Произошла ошибка. Попробуйте еще раз.');
+                    }
+                });
+        });
+
+        document.querySelectorAll('.delete-review-form').forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                const form = event.target;
+                const formData = new FormData(form);
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const reviewElement = document.getElementById(`review-${form.action.split('/').slice(-2, -1)}`);
+                            reviewElement.remove();
+                        } else {
+                            alert('Произошла ошибка. Попробуйте еще раз.');
+                        }
+                    });
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends 'shop/base.html' %}
+
+{% load static %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<div class="carousel">
+    <img src="{% static 'images/44.jpg' %}" class="active" alt="img 1">
+    <img src="{% static 'images/2.jpg' %}" alt="img 2">
+    <img src="{% static 'images/02.webp' %}" alt="img 3">
+    <img src="{% static 'images/45.jpg' %}" alt="img 4">
+    <img src="{% static 'images/0.webp' %}" alt="img 5">
+
+    <div class="carousel-buttons">
+        <button class="carousel-button" id="prev">‹</button>
+        <button class="carousel-button" id="next">›</button>
+    </div>
+</div>
+
+
+<div class="new-arrivals">
+    <h2>Новинки</h2>
+    <div class="latest-products">
+        {% for product in latest_products %}
+            <div class="latest-product">
+                <a href="{% url 'product_detail' product.id %}">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                    <h3>{{ product.name }}</h3>
+                    <p>{{ product.unit_price }} $.</p>
+                </a>
+            </div>
+
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Кнопка для вызова модального окна -->
+<button type="button" class="btn btn-info" data-toggle="modal" data-target="#infoModal">
+    Узнать больше
+</button>
+
+<!-- Модальное окно -->
+<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="infoModalLabel">Информация</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Здесь вы найдете лучшие спортивные добавки для улучшения ваших тренировок и здоровья!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть окно</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

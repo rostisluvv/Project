@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sport Shop{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="{% static 'js/scripts.js' %}"></script>
+</head>
+<body>
+<header>
+    <nav class="navbar">
+        <ul>
+            <li class="left"><a href="{% url 'index' %}">Главная</a>
+                <a href="{% url 'FitLife' %}">О компании</a></li>
+
+            <li class="center">
+                <a href="#">Категории продуктов</a>
+                <ul class="dropdown">
+                    {% for category in categories %}
+                        <li><a href="{% url 'category_products' category.id %}">{{ category.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </li>
+            <li class="search-form">
+                <form method="get" action="{% url 'product_search' %}" class="search-form">
+                    <input type="text" name="q" placeholder="Поиск продуктов..." id="search-input" required>
+                    <button type="submit">Поиск</button>
+                    <div id="autocomplete-results" class="autocomplete-results"></div> <!-- Контейнер для подсказок -->
+                </form>
+            </li>
+            <li class="right">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'cart' %}">Корзина</a>
+                    <a href="{% url 'profile' %}">Личный кабинет</a>
+                    <a href="{% url 'logout' %}">Выйти</a>
+
+                {% else %}
+                    <a href="{% url 'login' %}">Войти</a>
+                    <a href="{% url 'register' %}">Регистрация</a>
+
+                {% endif %}
+            </li>
+        </ul>
+    </nav>
+</header>
+<main>
+    {% block content %}{% endblock %}
+</main>
+<footer>
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-column">
+                <h3>Контакты</h3>
+                <p>Телефон: +1 234 567 890</p>
+                <p>Email: info@sportshop.com</p>
+            </div>
+            <div class="footer-column">
+                <h3>Личный кабинет</h3>
+                <a href="{% url 'login' %}">Войти</a>
+                <a href="{% url 'register' %}">Регистрация</a>
+            </div>
+            <div class="footer-column">
+                <h3>Социальные сети</h3>
+                <a href="#"><img src="{% static 'images/vk.png' %}" alt="ВКонтакте"></a>
+                <a href="#"><img src="{% static 'images/tg.png' %}" alt="Телеграм"></a>
+                <a href="#"><img src="{% static 'images/ig.png' %}" alt="Инстаграм"></a>
+            </div>
+        </div>
+    </footer>
+    <button id="scrollToTopBtn" onclick="scrollToTop()">
+        <img src="{% static 'images/p.webp' %}" alt="Наверх">
+    </button>
+</body>
+</html>
